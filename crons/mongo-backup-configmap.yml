@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-mongo-configmap
+data:
+  backup-mongo.sh: |
+    #!/bin/bash
+
+    echo Starting-BACKUP
+    NOW="$(date +"%F")-$(date +"%T")"
+    echo "$NOW"
+
+    FILE="$HOSTNAME-$NOW"
+    echo "Filename: $FILE"
+
+    mongodump --uri="mongodb://admin:Welcome%40123@192.168.100.70:30332/" --gzip -o /data/db/backup
+
+    sleep 30 | echo End-BACKUP

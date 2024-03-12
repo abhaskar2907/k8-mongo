@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-mongo-cron
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup-mongo-container
+            image: mongo
+            imagePullPolicy: IfNotPresent
+            command: ["/tmp/backup-mongo.sh"]
+            volumeMounts:
+              - name: backup-script
+                mountPath: "/tmp"
+              - name: "cron-storage"
+                mountPath: "/data/db"
+          restartPolicy: Never
+          volumes:
+          - name: backup-script
+            configMap:
+              name: backup-mongo-configmap
+              defaultMode: 0500
+          - name: "cron-storage"
+            persistentVolumeClaim: 
+              claimName: "cron-pvc"
